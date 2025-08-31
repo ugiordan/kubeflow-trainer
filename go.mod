@@ -11,7 +11,7 @@ require (
 	github.com/project-codeflare/codeflare-common v0.0.0-20250128135036-f501cd31fe8b
 	github.com/prometheus/client_golang v1.20.4
 	github.com/sirupsen/logrus v1.9.3
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.11.1
 	go.uber.org/zap v1.27.0
 	k8s.io/api v0.31.3
 	k8s.io/apimachinery v0.31.3
