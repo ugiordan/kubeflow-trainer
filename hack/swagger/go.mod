@@ -3,7 +3,7 @@ module github.com/kubeflow/training-operator/hack/swagger
 go 1.23
 
 require (
-	github.com/kubeflow/training-operator v0.0.0-00010101000000-000000000000
+	github.com/kubeflow/training-operator/v2 v2.1.0
 	k8s.io/klog/v2 v2.130.1
 	k8s.io/kube-openapi v0.0.0-20240430033511-f0e62f92d13f
 )
