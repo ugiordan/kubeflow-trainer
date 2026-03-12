@@ -208,12 +208,10 @@ func (jc *MPIJobReconciler) SetupWithManager(mgr ctrl.Manager, controllerThreads
 		util.OnDependentFuncs[*corev1.Pod](jc.Scheme, jc.Expectations, &jc.JobController))); err != nil {
 		return err
 	}
-	// inject watching for job related ConfigMap
-	if err = c.Watch(source.Kind[*corev1.ConfigMap](mgr.GetCache(), &corev1.ConfigMap{},
-		handler.TypedEnqueueRequestForOwner[*corev1.ConfigMap](mgr.GetScheme(), mgr.GetRESTMapper(), &kubeflowv1.MPIJob{}, handler.OnlyControllerOwner()),
-		util.OnDependentFuncs[*corev1.ConfigMap](jc.Scheme, jc.Expectations, &jc.JobController))); err != nil {
-		return err
-	}
+	// NOTE: ConfigMap watch removed to prevent cluster-wide informer cache flooding.
+	// The MPI controller uses ConfigMaps for host discovery and can read them
+	// via direct API calls instead of watching all ConfigMaps cluster-wide.
+
 	// inject watching for job related Role
 	if err = c.Watch(source.Kind[*rbacv1.Role](mgr.GetCache(), &rbacv1.Role{},
 		handler.TypedEnqueueRequestForOwner[*rbacv1.Role](mgr.GetScheme(), mgr.GetRESTMapper(), &kubeflowv1.MPIJob{}, handler.OnlyControllerOwner()),

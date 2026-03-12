@@ -26,6 +26,7 @@ import (
 	"go.uber.org/zap/zapcore"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
@@ -33,6 +34,7 @@ import (
 	"k8s.io/client-go/util/flowcontrol"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/cache"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
@@ -133,6 +135,16 @@ func main() {
 				namespace: {},
 			},
 		}
+	}
+
+	// Restrict ConfigMap informer to prevent cluster-wide cache flooding.
+	// An empty Namespaces map means the informer watches no namespaces,
+	// effectively disabling the cluster-wide ConfigMap cache.
+	if cacheOpts.ByObject == nil {
+		cacheOpts.ByObject = make(map[client.Object]cache.ByObject)
+	}
+	cacheOpts.ByObject[&corev1.ConfigMap{}] = cache.ByObject{
+		Namespaces: map[string]cache.Config{},
 	}
 
 	cfg := ctrl.GetConfigOrDie()
