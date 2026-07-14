@@ -179,6 +179,26 @@ func TestParseTLSProfile(t *testing.T) {
 			wantCiphers:    intermediateCiphers,
 		},
 		{
+			name: "Custom with whitespace-padded cipher names still resolves",
+			apiServer: makeAPIServer(map[string]interface{}{
+				"tlsSecurityProfile": map[string]interface{}{
+					"type": "Custom",
+					"custom": map[string]interface{}{
+						"minTLSVersion": "VersionTLS12",
+						"ciphers": []interface{}{
+							"  ECDHE-ECDSA-AES128-GCM-SHA256  ",
+							" ECDHE-RSA-AES256-GCM-SHA384",
+						},
+					},
+				},
+			}),
+			wantMinVersion: tls.VersionTLS12,
+			wantCiphers: []uint16{
+				tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+				tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+			},
+		},
+		{
 			name: "Custom with all unsupported ciphers returns empty slice",
 			apiServer: makeAPIServer(map[string]interface{}{
 				"tlsSecurityProfile": map[string]interface{}{

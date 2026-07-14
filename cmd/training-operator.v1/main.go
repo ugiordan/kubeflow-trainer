@@ -200,6 +200,10 @@ func parseTLSProfile(apiServer *unstructured.Unstructured) (uint16, []uint16) {
 		}
 		ciphers := make([]uint16, 0, len(cipherNames))
 		for _, name := range cipherNames {
+			name = strings.TrimSpace(name)
+			if name == "" {
+				continue
+			}
 			if id, ok := openSSLToGoCipher[name]; ok {
 				ciphers = append(ciphers, id)
 			} else {
